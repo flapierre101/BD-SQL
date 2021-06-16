@@ -1,0 +1,10 @@
+Remise
+Vous devez créer un fichier de format zip dans lequel vous insérez :
+[x] votre schéma de conception schema.pdf
+[ ] le script de création de la base de données creation.sql
+[ ] le script des requêtes demandées requetes.sql
+[ ] le script permettant d’ajouter des données insertion.sql
+[ ] le fichier Excel rempli sur la participation active des membres du groupe evaluation.xlsx
+
+Au final, vous devez remettre votre projet une seule fois sur Lea après avoir nommé votre fichier :
+[ ]NomPrenomEtudiant1_NomPrenomEtudiant2[_NomEtudiantN].zip

@@ -1,0 +1,132 @@
+// Membres : Caroline Emond Serret, Vincent Gaudreault, François Lapierre, Dany Viens
+// Possibilité de visualiser le code interractif :
+// https://dbdiagram.io/d/5f6bb3a37da1ea736e2f129a
+
+
+
+Table joueurs  {
+  id int [pk] // auto-increment
+  alias varchar(32) [NOT NULL]
+  courriel varchar [NOT NULL, unique]
+  mdp varchar(32) [not null]
+  genre char [not null] // plus contrainte supp
+  date_inscript date [not null] // après 1er janvier 2020
+  date_naissance date // apres 1900 et 13 et plus.
+}
+
+
+
+Table jeu {
+  id int [pk] 
+  nom varchar(16) [NOT NULL, unique]
+  sigle varchar(6) [NOT NULL, unique] // plus regex
+  description  varchar(2048)
+}
+
+Ref: habilete.jeu > jeu.id
+Ref: items.jeu > jeu.id
+
+Table habilete {
+  id int [pk]
+  nom varchar(32) [NOT NULL, unique]
+  sigle varchar(3) [NOT NULL, unique] // plus regex 3char débutant par 'S'
+  ener_acq NUMERIC(5,2) [NOT NULL] // entre 25.00 et 250.00
+  ener_uti NUMERIC(7,3) [not null] // variant entre -1000.000 et 1000,000
+  description varchar(512)
+  jeu int
+}
+
+Table items {
+  id int [pk]
+  nom varchar(32) [NOT NULL, unique]
+  sigle varchar(4) [NOT NULL, unique] // 4 charactes fixes, débutant 'I'
+  prob NUMERIC(10,9) [NOT NULL] // entre 0.000000000 et 1.000000000
+  cout NUMERIC(12,2) [NOT NULL] // 0.00 à 10^9 
+  description varchar(512)
+  jeu int
+}
+
+Table avatar_item {
+  id int [pk]
+  avatar int
+  item int
+  date_opt date [not null] // date et l'heure
+  qty NUMERIC(3) [not null, default:1]// 1 à 100
+  valeur NUMERIC(10) [not null]// 1 de 10^9
+}
+
+Ref: avatar_item.avatar > avatars.id
+Ref: avatar_item.item > items.id
+
+Table avatars {
+  id int [pk]
+  nom varchar(32) [not null]
+  joueur int 
+  couleur1 varchar(32) [not null]
+  couleur2 varchar(32) [null]
+  couleur3 varchar(32) [null] 
+  date_creation date [not null]
+  nb_mox longlong [not null, default:0] // -10^9 à 10^9
+}
+
+Table avatar_hab {
+  id int [pk]
+  habilete int
+  avatar int
+  date_opt date [not null]
+  niveau NUMERIC(3) [not null, default:0]
+}
+
+Ref: avatars.id < avatar_hab.avatar
+Ref: habilete.id < avatar_hab.habilete
+Ref: leitmotiv.nomavatar > avatars.id
+
+Table leitmotiv {
+  id int [pk]
+  nomavatar varchar(32)
+  leitmotiv varchar(64)
+}
+
+
+Ref: joueurs.id < avatars.joueur  
+
+Table achat {
+  id int [pk]
+  date_paiement date [not null] // date et heure!
+  mode_paiement int [not null]
+  montant NUMERIC(7,2) [not null]// 0.01 à 10000.00
+  type_achat NUMERIC(1) [not null] // 1 = mox 2 = temps
+  date_debut date // selon type_achatn type_achat
+  date_fin  date // doit être après date début et selon type_achat
+  joueur int // selon type_achat
+  item int // selon type_achat
+}
+Ref: achat.item > items.id
+Ref: achat.joueur > joueurs.id
+Ref: achat.mode_paiement > mode_paiement.id
+
+Table mode_paiement {
+  id int [pk]
+  type varchar(32)
+  
+}
+
+Table activite {
+  id int [pk]
+  date_debut date [not null] // date ET heure
+  duree date [not null] // secondes > 0
+}
+// Temps par jeu pour une activité
+Table activite_avatar_jeu {
+  id int [pk]
+  activite int [not null]
+  avatar int [not null]
+  date_debut date [not null] // date ET heure
+  duree date [not null] // secondes > 0
+  jeu int [not null]
+}
+//Temps par avatar pour une activité
+
+Ref: activite_avatar_jeu.jeu > jeu.id
+Ref: activite_avatar_jeu.avatar > avatars.id
+Ref: activite_avatar_jeu.activite > activite.id
