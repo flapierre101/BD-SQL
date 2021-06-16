@@ -1,0 +1,115 @@
+Table employe  {
+  id SERIAL [pk] // auto-increment
+  nom varchar(32) [NOT NULL]
+  prenom varchar(32) [NOT NULL]
+  genre char [not null] // new type gender [f,h,x]
+  nas varchar(9) [NOT NULL, unique]
+  date_embauche date [not null] // après 1er janvier 2018
+  salaire NUMERIC(5,2) [not null] // entre 15.00 et 250.00 Default 27.50$
+  poste int [not null]
+  departement int [not null]
+  
+}
+
+Table poste {
+  id SERIAL [pk] 
+  nom varchar(16) [NOT NULL, unique]
+  
+}
+
+Table departement {
+  id SERIAL [pk] 
+  nom varchar(16) [NOT NULL, unique]
+  
+}
+
+Ref: employe.poste > poste.id
+Ref: employe.departement > departement.id
+
+Table troncon {
+  id SERIAL [pk]
+  rue int [NOT NULL]
+  longueur NUMERIC(7,1) [NOT NULL] // 0,0 et 100000.0 en mètre
+  limiteVitesse NUMERIC(3) [NOT NULL] // entre 25 et 120 km/h
+  nombreVoies NUMERIC(1) [not null, Default:1] //1 à 8
+  typePav enum  [not null]//enum new type
+  direction varchar(2) //north sud est ouest
+  intersection1 int
+  intersection2 int
+} //les rue table extra
+Ref: troncon.intersection1 > intersection.id
+Ref: troncon.intersection2 > intersection.id
+
+Table rue {
+  id SERIAL [pk]
+  nom varchar(32) [not null]
+}
+Ref: troncon.rue > rue.id
+
+// create type enum{asphalte, ciment, pavé brique, pavé pierre}
+Table intersection {
+  id int [pk, unique] // séquence
+  latitude NUMERIC(8,6) [NOT NULL]
+  longitude NUMERIC(9,6) [NOT NULL] 
+  typePav enum [not null]
+}
+// reseaux routier -> create view
+
+Table laser {
+  id SERIAL [pk]
+  las_marq_mod int [not null]
+  numSerie varchar(16) [not null] // fixe 
+}
+
+Table las_marq_mod {
+  id SERIAL [pk]
+  marque varchar(32) [not null]
+  modele varchar(32) [not null] 
+}
+Ref: las_marq_mod.id < laser.las_marq_mod
+
+Table vehicule {
+  id SERIAL [pk]
+  veh_marq_mod int [not null]
+  immatr varchar(6) [not null] //fixe
+  couleur varchar(10)
+}
+
+Table veh_marq_mod {
+  id SERIAL [pk]
+  marque varchar(32) [not null]
+  modele varchar(32) [not null] 
+}
+Ref: veh_marq_mod.id < vehicule.veh_marq_mod
+
+Table inspection {
+  id SERIAL [pk]
+  dateDebut date [not null]
+  dateFin date [not null]
+  vehiUti int [not null]
+  conducteur int [not null]
+  kiloDebut int [not null]
+  kiloFin int [not null]
+  laserUti int [not null]
+  opLaser int [not null]//operateur laser
+  filePath varchar(512) [not null]
+  fileName varchar(18) [not null] //PZW_AAA000-00.xdat
+  
+}
+Ref: inspection.vehiUti > vehicule.id
+Ref: inspection.conducteur > employe.id
+Ref: inspection.laserUti > laser.id
+Ref: inspection.opLaser > employe.id
+
+
+
+Table inspect_tronc{
+  id SERIAL [pk]
+  inspect int
+  troncon int
+  voie varchar(1) // doit respect # de voie du tronc
+}
+
+Ref: inspect_tronc.inspect > inspection.id
+Ref: inspect_tronc.troncon > troncon.id
+
